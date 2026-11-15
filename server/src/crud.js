@@ -22,10 +22,10 @@ export function crud(app, db, login, cfg) {
   }
 
   // grava (insert/update) traduzindo erros de restrição do SQLite em 400/409
-  const grava = (res, uid, dados, sql, args, status, id) => {
+  const grava = (res, uid, dados, sql, args, status, id, checaAula = true) => {
     const faltam = obrigatorios.filter((c) => vazio(dados[c]))
     if (faltam.length) return res.status(400).json({ erro: `Campos obrigatórios: ${faltam.join(', ')}` })
-    if (aula && !db.prepare('SELECT 1 FROM aulas WHERE id = ? AND usuario_id = ? AND excluido_em IS NULL').get(dados.aula_id, uid))
+    if (aula && checaAula && !db.prepare('SELECT 1 FROM aulas WHERE id = ? AND usuario_id = ? AND excluido_em IS NULL').get(dados.aula_id, uid))
       return res.status(400).json({ erro: 'Aula inválida' })
     try {
       const r = db.prepare(sql).run(...args)
@@ -63,7 +63,7 @@ export function crud(app, db, login, cfg) {
     const d = { ...Object.fromEntries(campos.map((c) => [c, atual[c]])), ...limpa(req.body) }
     grava(res, req.user.id, d,
       `UPDATE ${tabela} SET ${campos.map((c) => c + ' = ?').join(', ')} WHERE id = ?`,
-      [...campos.map((c) => d[c]), atual.id], 200, atual.id)
+      [...campos.map((c) => d[c]), atual.id], 200, atual.id, 'aula_id' in req.body)
   })
 
   app.delete(`${rota}/:id`, login, (req, res) => {

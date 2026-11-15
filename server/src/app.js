@@ -76,6 +76,17 @@ export function criarApp(db) {
     ordem: 't.semestre DESC, t.dia_semana, t.horario',
   })
 
+  crud(app, db, login, {
+    tabela: 'atividades',
+    campos: ['aula_id', 'titulo', 'descricao', 'data_entrega', 'status'],
+    obrigatorios: ['aula_id', 'titulo', 'data_entrega'],
+    texto: ['titulo'],
+    filtros: ['data_entrega'],
+    inteiros: ['aula_id'],
+    aula: true,
+    ordem: 't.data_entrega, t.id',
+  })
+
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => res.status(err.status || 500).json({ erro: err.status ? 'Requisição inválida' : 'Erro interno' }))
   return app

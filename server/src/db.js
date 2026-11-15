@@ -26,6 +26,18 @@ const SCHEMA = [
     excluido_em TEXT
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS ux_aulas ON aulas(usuario_id, cod_disciplina, dia_semana, horario, semestre) WHERE excluido_em IS NULL`,
+  `CREATE TABLE IF NOT EXISTS atividades (
+    id INTEGER PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id),
+    aula_id INTEGER NOT NULL REFERENCES aulas(id),
+    titulo TEXT NOT NULL,
+    descricao TEXT,
+    data_entrega TEXT NOT NULL CHECK (data_entrega GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+    status TEXT NOT NULL DEFAULT 'a_fazer' CHECK (status IN ('a_fazer','em_andamento','concluida')),
+    notificado_em TEXT,
+    excluido_em TEXT
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS ux_atividades ON atividades(usuario_id, aula_id, titulo, data_entrega) WHERE excluido_em IS NULL`,
 ]
 
 export function abrirDb(arquivo = process.env.DB_FILE || 'organizador.db') {
