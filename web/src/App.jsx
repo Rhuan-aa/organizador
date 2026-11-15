@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from './api.js'
 import CrudPage from './CrudPage.jsx'
 import Calendario from './Calendario.jsx'
+import Inicio from './Inicio.jsx'
 import { Icone, UIProvider } from './ui.jsx'
 
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((d, i) => [i, d])
@@ -136,6 +137,7 @@ function Usuarios() {
 }
 
 const PAGINAS = [
+  ['inicio', 'Início'],
   ['aulas', 'Aulas'],
   ['atividades', 'Atividades'],
   ['provas', 'Provas'],
@@ -159,10 +161,11 @@ export default function App() {
   }, [])
   const ir = (h) => { location.hash = h }
   if (!pronto) return null
-  if (!user) return <Login onEntrar={(u) => { setUser(u); ir('aulas') }} />
+  if (!user) return <Login onEntrar={(u) => { setUser(u); ir('inicio') }} />
 
   const admin = user.perfil === 'admin'
   const conteudo = {
+    inicio: <Inicio user={user} ir={ir} />,
     aulas: <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />,
     atividades: <CrudPage titulo="Atividade" rota="atividades" campos={CAMPOS.atividades} classeLinha={classePrazo(user.antecedencia_dias)} />,
     provas: <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />,
@@ -170,7 +173,7 @@ export default function App() {
     perfil: <Perfil user={user} onAtualizar={setUser} />,
     ...(admin && { usuarios: <Usuarios /> }),
   }
-  const pagina = conteudo[rota.pagina] ? rota.pagina : 'aulas'
+  const pagina = conteudo[rota.pagina] ? rota.pagina : 'inicio'
   const sair = () => api('POST', '/auth/logout').then(() => { setUser(null); ir('') })
   const link = (k, rotulo) => (
     <a key={k} href={`#${k}`} className={k === pagina ? 'ativo' : ''} aria-current={k === pagina ? 'page' : undefined}>
