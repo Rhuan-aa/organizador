@@ -117,7 +117,7 @@ export const Campo = ({ rotulo, obrigatorio, className = '', children }) => (
 )
 
 // Formulário de painel: erro do servidor no topo, Salvar com estado de carregamento
-export function Formulario({ onSalvar, children, extra, dois }) {
+export function Formulario({ onSalvar, children, extra, dois, semAcoes }) {
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
   const enviar = async (e) => {
@@ -129,7 +129,7 @@ export function Formulario({ onSalvar, children, extra, dois }) {
     <form onSubmit={enviar}>
       {erro && <p className="erro-msg" role="alert">{erro}</p>}
       <div className={`grade-form ${dois ? 'dois' : ''}`}>{children}</div>
-      <p className="mudo" style={{ marginTop: 16 }}>* obrigatório</p>
+      {!semAcoes && <p className="mudo" style={{ marginTop: 16 }}>* obrigatório</p>}
       <div className="acoes">
         {extra}
         <button className={`btn btn-primario ${enviando ? 'carregando' : ''}`} disabled={enviando}>Salvar</button>

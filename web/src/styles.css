@@ -289,7 +289,6 @@ dialog.painel[open] { display: flex; }
 .passada .data-bloco { background: var(--campo); color: var(--tinta-3); }
 .hora { width: 48px; flex: none; font-weight: 600; color: var(--aula); font-size: 15px; }
 input[type=search] { appearance: none; }
-.seg label { text-transform: none; }
 
 /* calendário */
 .barra-cal { display: flex; justify-content: space-between; align-items: center; gap: var(--s4); flex-wrap: wrap; margin-bottom: var(--s3); }
@@ -316,3 +315,15 @@ input[type=search] { appearance: none; }
 .agenda .card { padding: var(--s4); }
 .agenda .card.hoje { box-shadow: 0 0 0 2px var(--acento); }
 .painel .acoes { justify-content: flex-start; }
+
+/* login, perfil, usuários */
+.login-pagina { min-height: 100dvh; display: grid; place-items: center; padding: var(--s4); }
+.login { width: min(400px, 100%); display: flex; flex-direction: column; gap: var(--s4); padding: var(--s8); }
+.login h1 { margin-bottom: var(--s1); }
+.estreito { max-width: 520px; }
+.campo .mudo { display: block; margin-top: var(--s1); font-weight: 400; }
+.tabela { overflow-x: auto; padding: var(--s2); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: var(--s2) var(--s3); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--tinta-3); }
+td { padding: var(--s2) var(--s3); border-top: 1px solid var(--borda); }
+td input, td select { min-width: 140px; }
