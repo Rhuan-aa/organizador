@@ -98,6 +98,26 @@ export function criarApp(db) {
     duplicado: 'Conflito de horário com outra prova',
   })
 
+  app.get('/api/calendario', login, (req, res) => {
+    const ano = Number(req.query.ano), mes = Number(req.query.mes)
+    if (!Number.isInteger(ano) || !Number.isInteger(mes) || mes < 1 || mes > 12)
+      return res.status(400).json({ erro: 'Informe ano e mes (1-12)' })
+    const prefixo = `${ano}-${String(mes).padStart(2, '0')}-`
+    const uid = req.user.id
+    const eventos = []
+    const aulas = db.prepare("SELECT id, nome_disciplina, dia_semana, horario FROM aulas WHERE usuario_id = ? AND excluido_em IS NULL AND status = 'ativa'").all(uid)
+    for (let d = 1, n = new Date(ano, mes, 0).getDate(); d <= n; d++) {
+      const dow = new Date(ano, mes - 1, d).getDay()
+      for (const a of aulas.filter((a) => a.dia_semana === dow))
+        eventos.push({ tipo: 'aula', data: prefixo + String(d).padStart(2, '0'), horario: a.horario, titulo: a.nome_disciplina, id: a.id })
+    }
+    for (const a of db.prepare("SELECT id, titulo, data_entrega, status FROM atividades WHERE usuario_id = ? AND excluido_em IS NULL AND data_entrega LIKE ?").all(uid, prefixo + '%'))
+      eventos.push({ tipo: 'atividade', data: a.data_entrega, titulo: a.titulo, id: a.id, status: a.status })
+    for (const p of db.prepare("SELECT p.id, p.data, p.horario, a.nome_disciplina FROM provas p JOIN aulas a ON a.id = p.aula_id WHERE p.usuario_id = ? AND p.excluido_em IS NULL AND p.data LIKE ?").all(uid, prefixo + '%'))
+      eventos.push({ tipo: 'prova', data: p.data, horario: p.horario, titulo: `Prova: ${p.nome_disciplina}`, id: p.id })
+    res.json(eventos.sort((a, b) => a.data.localeCompare(b.data) || (a.horario || '').localeCompare(b.horario || '')))
+  })
+
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => res.status(err.status || 500).json({ erro: err.status ? 'Requisição inválida' : 'Erro interno' }))
   return app
