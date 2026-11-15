@@ -290,3 +290,29 @@ dialog.painel[open] { display: flex; }
 .hora { width: 48px; flex: none; font-weight: 600; color: var(--aula); font-size: 15px; }
 input[type=search] { appearance: none; }
 .seg label { text-transform: none; }
+
+/* calendário */
+.barra-cal { display: flex; justify-content: space-between; align-items: center; gap: var(--s4); flex-wrap: wrap; margin-bottom: var(--s3); }
+.mes { font-size: 20px; letter-spacing: -.01em; }
+.legenda { display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap; font-size: 13px; color: var(--tinta-2); }
+.legenda > span { display: inline-flex; align-items: center; gap: 6px; }
+.ponto { width: 10px; height: 10px; border-radius: 3px; }
+.ponto.aula, .ev.aula { background: var(--aula-fundo); color: var(--aula); } .ponto.aula { background: var(--aula); }
+.ponto.atividade { background: var(--atividade-ponto); } .ponto.prova { background: var(--prova); }
+.troca { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; cursor: pointer; }
+.troca input { width: 18px; height: 18px; accent-color: var(--acento); }
+.grade { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--borda); border-radius: var(--r-g); overflow: hidden; box-shadow: var(--sombra); }
+.grade .cab { padding: var(--s2); text-align: center; font-size: 12px; font-weight: 600; color: var(--tinta-3); background: var(--superficie-2); text-transform: uppercase; letter-spacing: .04em; }
+.grade .vazia { background: var(--superficie-2); }
+.dia { min-height: 104px; padding: 6px; display: flex; flex-direction: column; align-items: stretch; gap: 3px; text-align: left; border: 0; background: var(--superficie); cursor: pointer; overflow: hidden; }
+.dia:hover { background: var(--superficie-2); }
+.dia > b { align-self: flex-start; font-size: 13px; font-weight: 600; color: var(--tinta-2); min-width: 24px; height: 24px; display: grid; place-items: center; border-radius: 12px; }
+.dia.hoje > b { background: var(--acento); color: var(--acento-sobre); }
+.ev { display: block; border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev.atividade { background: var(--atividade-fundo); color: var(--atividade); }
+.ev.prova { background: var(--prova-fundo); color: var(--prova); }
+.dia .mais { font-size: 12px; padding-left: 6px; }
+.agenda { display: flex; flex-direction: column; gap: var(--s3); }
+.agenda .card { padding: var(--s4); }
+.agenda .card.hoje { box-shadow: 0 0 0 2px var(--acento); }
+.painel .acoes { justify-content: flex-start; }

@@ -134,7 +134,7 @@ export default function App() {
     aulas: <Aulas sub={rota.sub} ir={ir} />,
     atividades: <Atividades user={user} sub={rota.sub} ir={ir} />,
     provas: <Provas sub={rota.sub} ir={ir} />,
-    calendario: <Calendario />,
+    calendario: <Calendario ir={ir} />,
     perfil: <Perfil user={user} onAtualizar={setUser} />,
     ...(admin && { usuarios: <Usuarios /> }),
   }
