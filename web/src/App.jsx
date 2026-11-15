@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from './api.js'
 import CrudPage from './CrudPage.jsx'
 import Calendario from './Calendario.jsx'
+import Atividades from './Atividades.jsx'
 import Inicio from './Inicio.jsx'
 import { Icone, UIProvider } from './ui.jsx'
 
@@ -167,7 +168,7 @@ export default function App() {
   const conteudo = {
     inicio: <Inicio user={user} ir={ir} />,
     aulas: <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />,
-    atividades: <CrudPage titulo="Atividade" rota="atividades" campos={CAMPOS.atividades} classeLinha={classePrazo(user.antecedencia_dias)} />,
+    atividades: <Atividades user={user} sub={rota.sub} ir={ir} />,
     provas: <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />,
     calendario: <Calendario />,
     perfil: <Perfil user={user} onAtualizar={setUser} />,
