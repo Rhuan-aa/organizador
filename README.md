@@ -1,7 +1,7 @@
 # Organizador de Vida Acadêmica
 
 Aplicação web para o aluno gerenciar aulas, atividades e provas, ver tudo em um calendário e receber avisos de prazos por e-mail.
-API em Node 22 (Express + `node:sqlite`) e interface em React (Vite). Os documentos de gestão (D1–D14) estão em `docs/gestao/`.
+API em Node 22 (Express + `node:sqlite`) e interface em React (Vite). Os documentos de gestão (D1–D14) ficam em `docs/gestao/`, fora do repositório porque contêm dados pessoais dos integrantes.
 
 ## Como rodar
 
