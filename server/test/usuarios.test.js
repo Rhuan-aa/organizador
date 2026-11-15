@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { createHmac } from 'node:crypto'
 import { iniciar } from './util.js'
 
 test('registro, login, eu, perfis e senha errada', async (t) => {
@@ -28,4 +29,15 @@ test('registro, login, eu, perfis e senha errada', async (t) => {
   // exclusão de usuário: sai da lista e perde o acesso
   assert.equal((await a('DELETE', `/api/usuarios/${r.json.id}`)).status, 204)
   assert.equal((await b('GET', '/api/auth/eu')).status, 401)
+})
+
+test('token forjado com a antiga chave padrão é rejeitado', async (t) => {
+  const { base, cliente, fechar } = await iniciar()
+  t.after(fechar)
+  // cria o usuário 1 (admin) para o token forjado apontar para alguém real
+  await cliente()('POST', '/api/auth/registrar', { nome: 'Ana', email: 'ana@x.com', senha: '123' })
+  const payload = Buffer.from(JSON.stringify({ id: 1, perfil: 'admin' })).toString('base64url')
+  const hmac = createHmac('sha256', 'dev-secret-troque-em-producao').update(payload).digest('base64url')
+  const r = await fetch(`${base}/api/usuarios`, { headers: { cookie: `token=${payload}.${hmac}` } })
+  assert.equal(r.status, 401)
 })

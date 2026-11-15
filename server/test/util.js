@@ -22,5 +22,5 @@ export async function iniciar() {
       return { status: r.status, json: txt ? JSON.parse(txt) : null }
     }
   }
-  return { db, cliente, fechar: () => srv.close() }
+  return { db, base, cliente, fechar: () => srv.close() }
 }

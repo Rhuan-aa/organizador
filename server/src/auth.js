@@ -1,6 +1,7 @@
 import { randomBytes, scryptSync, timingSafeEqual, createHmac } from 'node:crypto'
 
-const SECRET = process.env.SECRET || 'dev-secret-troque-em-producao'
+// Sem SECRET no ambiente, gera uma chave aleatória por execução: os logins expiram ao reiniciar o servidor.
+const SECRET = process.env.SECRET || randomBytes(32).toString('hex')
 const assina = (p) => createHmac('sha256', SECRET).update(p).digest('base64url')
 const iguais = (a, b) => a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b))
 
