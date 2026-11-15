@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from './api.js'
 import CrudPage from './CrudPage.jsx'
 import Calendario from './Calendario.jsx'
+import { Icone, UIProvider } from './ui.jsx'
 
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((d, i) => [i, d])
 const STATUS = [['a_fazer', 'A fazer'], ['em_andamento', 'Em andamento'], ['concluida', 'Concluída']]
@@ -134,38 +135,77 @@ function Usuarios() {
   )
 }
 
+const PAGINAS = [
+  ['aulas', 'Aulas'],
+  ['atividades', 'Atividades'],
+  ['provas', 'Provas'],
+  ['calendario', 'Calendário'],
+]
+const rotaAtual = () => {
+  const [pagina, sub] = location.hash.slice(1).split('/')
+  return { pagina, sub }
+}
+
 export default function App() {
   const [user, setUser] = useState(null)
   const [pronto, setPronto] = useState(false)
-  const [pagina, setPagina] = useState('aulas')
+  const [rota, setRota] = useState(rotaAtual)
+  const [menu, setMenu] = useState(false)
   useEffect(() => {
     api('GET', '/auth/eu').then(setUser).catch(() => {}).finally(() => setPronto(true))
+    const f = () => { setRota(rotaAtual()); setMenu(false) }
+    addEventListener('hashchange', f)
+    return () => removeEventListener('hashchange', f)
   }, [])
+  const ir = (h) => { location.hash = h }
   if (!pronto) return null
-  if (!user) return <Login onEntrar={setUser} />
+  if (!user) return <Login onEntrar={(u) => { setUser(u); ir('aulas') }} />
 
-  // [chave, rótulo, só admin?, conteúdo]
-  const paginas = [
-    ['aulas', 'Aulas', false, <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />],
-    ['atividades', 'Atividades', false, <CrudPage titulo="Atividade" rota="atividades" campos={CAMPOS.atividades} classeLinha={classePrazo(user.antecedencia_dias)} />],
-    ['provas', 'Provas', false, <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />],
-    ['calendario', 'Calendário', false, <Calendario />],
-    ['perfil', 'Perfil', false, <Perfil user={user} onAtualizar={setUser} />],
-    ['usuarios', 'Usuários', true, <Usuarios />],
-  ].filter((p) => !p[2] || user.perfil === 'admin')
-  const atual = paginas.find((p) => p[0] === pagina) || paginas[0]
+  const admin = user.perfil === 'admin'
+  const conteudo = {
+    aulas: <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />,
+    atividades: <CrudPage titulo="Atividade" rota="atividades" campos={CAMPOS.atividades} classeLinha={classePrazo(user.antecedencia_dias)} />,
+    provas: <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />,
+    calendario: <Calendario />,
+    perfil: <Perfil user={user} onAtualizar={setUser} />,
+    ...(admin && { usuarios: <Usuarios /> }),
+  }
+  const pagina = conteudo[rota.pagina] ? rota.pagina : 'aulas'
+  const sair = () => api('POST', '/auth/logout').then(() => { setUser(null); ir('') })
+  const link = (k, rotulo) => (
+    <a key={k} href={`#${k}`} className={k === pagina ? 'ativo' : ''} aria-current={k === pagina ? 'page' : undefined}>
+      <Icone nome={k} /><span>{rotulo}</span>
+    </a>
+  )
+  const rodape = [['perfil', 'Perfil'], ...(admin ? [['usuarios', 'Usuários']] : [])]
 
   return (
-    <>
-      <nav>
-        {paginas.map(([k, rotulo]) => (
-          <button key={k} className={k === atual[0] ? 'ativo' : ''} onClick={() => setPagina(k)}>{rotulo}</button>
-        ))}
-        <span className="espaco" />
-        <span>{user.nome}</span>
-        <button onClick={() => api('POST', '/auth/logout').then(() => setUser(null))}>Sair</button>
-      </nav>
-      <main key={atual[0]}>{atual[3]}</main>
-    </>
+    <UIProvider>
+      <div className="app">
+        <aside className="lateral">
+          <div className="marca">Organizador<small>{user.nome}</small></div>
+          <nav aria-label="Principal">{PAGINAS.map(([k, r]) => link(k, r))}</nav>
+          <nav className="rodape" aria-label="Conta">
+            {rodape.map(([k, r]) => link(k, r))}
+            <button onClick={sair}><Icone nome="sair" /><span>Sair</span></button>
+          </nav>
+        </aside>
+        <header className="topo">
+          <strong>Organizador</strong>
+          <button className="avatar" aria-label="Conta" aria-expanded={menu} onClick={() => setMenu(!menu)}>
+            {user.nome.trim()[0]?.toUpperCase()}
+          </button>
+          {menu && (
+            <div className="menu-conta">
+              <p className="mudo">{user.nome}</p>
+              {rodape.map(([k, r]) => <a key={k} href={`#${k}`}><Icone nome={k} />{r}</a>)}
+              <button onClick={sair}><Icone nome="sair" />Sair</button>
+            </div>
+          )}
+        </header>
+        <main key={pagina}>{conteudo[pagina]}</main>
+        <nav className="abas" aria-label="Principal">{PAGINAS.map(([k, r]) => link(k, r))}</nav>
+      </div>
+    </UIProvider>
   )
 }

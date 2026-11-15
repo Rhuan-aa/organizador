@@ -148,3 +148,85 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px
 .icone { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .t-aula { color: var(--aula); } .t-atividade { color: var(--atividade); } .t-prova { color: var(--prova); }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* estrutura do app: barra lateral (desktop) / abas inferiores (celular) */
+.app { min-height: 100vh; }
+.lateral {
+  position: fixed; inset: 0 auto 0 0; width: 232px; display: flex; flex-direction: column; gap: var(--s2);
+  padding: var(--s4) var(--s3); border-right: 1px solid var(--borda);
+}
+.marca { display: flex; flex-direction: column; padding: var(--s2) var(--s3) var(--s4); font-weight: 650; font-size: 17px; letter-spacing: -.01em; }
+.marca small { font-weight: 400; font-size: 13px; color: var(--tinta-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lateral nav { display: flex; flex-direction: column; gap: 2px; }
+.lateral .rodape { margin-top: auto; padding-top: var(--s3); border-top: 1px solid var(--borda); }
+.lateral a, .lateral nav button {
+  display: flex; align-items: center; gap: var(--s3); min-height: 40px; padding: 0 var(--s3);
+  border: 0; border-radius: var(--r-m); background: none; color: var(--tinta-2); text-decoration: none; font-weight: 500; cursor: pointer; text-align: left;
+}
+.lateral a:hover, .lateral nav button:hover { background: var(--campo); color: var(--tinta); }
+.lateral a.ativo { background: var(--acento-fundo); color: var(--acento); }
+main { margin-left: 232px; max-width: 1040px; padding: var(--s8) var(--s8) 64px; animation: entra .22s var(--ease); }
+@keyframes entra { from { opacity: 0; transform: translateY(4px); } }
+.topo, .abas { display: none; }
+.cabecalho { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s4); flex-wrap: wrap; margin-bottom: var(--s6); }
+.cabecalho .acoes { display: flex; gap: var(--s2); flex-wrap: wrap; }
+
+@media (max-width: 767px) {
+  .lateral { display: none; }
+  main { margin: 0; padding: var(--s4) var(--s4) 96px; }
+  .topo {
+    position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between;
+    padding: var(--s2) var(--s4); min-height: 52px; background: var(--fundo); border-bottom: 1px solid var(--borda);
+  }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--acento); color: var(--acento-sobre); font-weight: 600; cursor: pointer; }
+  .menu-conta {
+    position: absolute; right: var(--s4); top: 54px; min-width: 200px; padding: var(--s2); border-radius: var(--r-m);
+    background: var(--superficie); box-shadow: var(--sombra-alta); display: flex; flex-direction: column;
+  }
+  .menu-conta p { padding: var(--s2) var(--s3); }
+  .menu-conta a, .menu-conta button {
+    display: flex; align-items: center; gap: var(--s3); min-height: 44px; padding: 0 var(--s3); border: 0; background: none;
+    color: var(--tinta); text-decoration: none; border-radius: var(--r-p); cursor: pointer; font-size: 15px;
+  }
+  .menu-conta a:hover, .menu-conta button:hover { background: var(--campo); }
+  .abas {
+    position: fixed; inset: auto 0 0 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr);
+    padding: 4px 4px max(4px, env(safe-area-inset-bottom)); background: var(--superficie); border-top: 1px solid var(--borda);
+  }
+  .abas a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; font-size: 11px; font-weight: 500; color: var(--tinta-3); text-decoration: none; border-radius: var(--r-m); }
+  .abas a.ativo { color: var(--acento); }
+  .abas a.ativo .icone { stroke-width: 2.3; }
+}
+@media (min-width: 768px) { .topo, .abas { display: none; } }
+
+/* toasts, diálogo de confirmação, painel lateral */
+.toasts { position: fixed; z-index: 100; left: 50%; bottom: var(--s6); transform: translateX(-50%); display: flex; flex-direction: column; gap: var(--s2); align-items: center; pointer-events: none; }
+@media (max-width: 767px) { .toasts { bottom: 76px; width: calc(100% - 32px); } }
+.toast {
+  pointer-events: auto; display: flex; align-items: center; gap: var(--s4); padding: var(--s3) var(--s4); border-radius: var(--r-m);
+  background: var(--tinta); color: var(--fundo); font-size: 14px; font-weight: 500; box-shadow: var(--sombra-alta); animation: entra .2s var(--ease);
+}
+.toast button { background: none; border: 0; color: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; min-height: 32px; padding: 0 var(--s2); }
+dialog { color: var(--tinta); background: var(--superficie); border: 0; padding: 0; }
+dialog::backdrop { background: rgba(15, 14, 10, .45); animation: fade .2s; }
+@keyframes fade { from { opacity: 0; } }
+dialog.confirmar { border-radius: var(--r-g); padding: var(--s6); width: min(400px, calc(100% - 32px)); box-shadow: var(--sombra-alta); animation: entra .2s var(--ease); }
+.confirmar .sub { margin: var(--s2) 0 var(--s6); }
+.acoes { display: flex; justify-content: flex-end; gap: var(--s2); margin-top: var(--s6); flex-wrap: wrap; }
+.acoes .esq { margin-right: auto; }
+dialog.painel {
+  margin: 0 0 0 auto; height: 100dvh; max-height: none; width: min(480px, 100%); box-shadow: var(--sombra-alta);
+  flex-direction: column; animation: drawer .25s var(--ease);
+}
+dialog.painel[open] { display: flex; }
+@keyframes drawer { from { transform: translateX(40px); opacity: 0; } }
+.painel header { display: flex; align-items: center; justify-content: space-between; padding: var(--s3) var(--s4) var(--s3) var(--s6); border-bottom: 1px solid var(--borda); }
+.painel .corpo { padding: var(--s6); overflow-y: auto; flex: 1; }
+.painel .corpo .erro-msg { margin-bottom: var(--s4); }
+@media (max-width: 767px) {
+  dialog.painel { margin: auto 0 0; width: 100%; height: auto; max-height: 92dvh; border-radius: var(--r-g) var(--r-g) 0 0; animation: sheet .25s var(--ease); }
+  @keyframes sheet { from { transform: translateY(40px); opacity: 0; } }
+  .painel .corpo { padding: var(--s4); }
+}
+.vazio { text-align: center; padding: var(--s8) var(--s4); display: flex; flex-direction: column; align-items: center; gap: var(--s2); }
+.vazio .btn { margin-top: var(--s3); }
