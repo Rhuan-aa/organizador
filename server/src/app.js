@@ -1,4 +1,5 @@
 import express from 'express'
+import { crud } from './crud.js'
 import { hashSenha, confereSenha, setarCookie, exigeLogin, exigeAdmin } from './auth.js'
 
 const publico = ({ senha_hash, ...u }) => u
@@ -63,6 +64,16 @@ export function criarApp(db) {
     const r = db.prepare("UPDATE usuarios SET excluido_em = datetime('now') WHERE id = ? AND excluido_em IS NULL").run(req.params.id)
     if (!r.changes) return res.status(404).json({ erro: 'Não encontrado' })
     res.status(204).end()
+  })
+
+  crud(app, db, login, {
+    tabela: 'aulas',
+    campos: ['cod_disciplina', 'nome_disciplina', 'professor', 'sala', 'dia_semana', 'horario', 'periodo', 'semestre', 'status'],
+    obrigatorios: ['cod_disciplina', 'nome_disciplina', 'dia_semana', 'horario', 'semestre'],
+    texto: ['cod_disciplina', 'nome_disciplina', 'professor'],
+    filtros: ['semestre', 'periodo', 'status'],
+    inteiros: ['dia_semana'],
+    ordem: 't.semestre DESC, t.dia_semana, t.horario',
   })
 
   // eslint-disable-next-line no-unused-vars
