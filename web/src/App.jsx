@@ -1,47 +1,11 @@
 import { useEffect, useState } from 'react'
 import { api } from './api.js'
-import CrudPage from './CrudPage.jsx'
+import Aulas from './Aulas.jsx'
+import Provas from './Provas.jsx'
 import Calendario from './Calendario.jsx'
 import Atividades from './Atividades.jsx'
 import Inicio from './Inicio.jsx'
 import { Icone, UIProvider } from './ui.jsx'
-
-const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((d, i) => [i, d])
-const STATUS = [['a_fazer', 'A fazer'], ['em_andamento', 'Em andamento'], ['concluida', 'Concluída']]
-
-const CAMPOS = {
-  aulas: [
-    { nome: 'cod_disciplina', rotulo: 'Código', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'nome_disciplina', rotulo: 'Disciplina', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'professor', rotulo: 'Professor', filtro: true, coluna: true },
-    { nome: 'sala', rotulo: 'Sala', coluna: true },
-    { nome: 'dia_semana', rotulo: 'Dia', tipo: 'select', opcoes: DIAS, obrigatorio: true, coluna: true },
-    { nome: 'horario', rotulo: 'Horário', tipo: 'time', obrigatorio: true, coluna: true },
-    { nome: 'periodo', rotulo: 'Período', filtro: true },
-    { nome: 'semestre', rotulo: 'Semestre', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'status', rotulo: 'Status', tipo: 'select', opcoes: [['ativa', 'Ativa'], ['inativa', 'Inativa']], filtro: true },
-  ],
-  atividades: [
-    { nome: 'aula_id', rotulo: 'Aula', tipo: 'aula', obrigatorio: true, coluna: true },
-    { nome: 'titulo', rotulo: 'Título', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'descricao', rotulo: 'Descrição', tipo: 'textarea' },
-    { nome: 'data_entrega', rotulo: 'Entrega', tipo: 'date', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'status', rotulo: 'Status', tipo: 'select', opcoes: STATUS, coluna: true, inline: true },
-  ],
-  provas: [
-    { nome: 'aula_id', rotulo: 'Aula', tipo: 'aula', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'data', rotulo: 'Data', tipo: 'date', obrigatorio: true, filtro: true, coluna: true },
-    { nome: 'horario', rotulo: 'Horário', tipo: 'time', obrigatorio: true, coluna: true },
-    { nome: 'conteudo', rotulo: 'Conteúdo', tipo: 'textarea', coluna: true },
-  ],
-}
-
-// RF04: vermelho = vencida; amarelo = prazo dentro da antecedência do usuário
-const classePrazo = (antecedencia) => (a) => {
-  if (a.status === 'concluida') return ''
-  const dias = (new Date(a.data_entrega) - new Date(new Date().toLocaleDateString('sv'))) / 864e5
-  return dias < 0 ? 'vencida' : dias <= antecedencia ? 'proxima' : ''
-}
 
 const formDados = (e) => Object.fromEntries(new FormData(e.target))
 
@@ -167,9 +131,9 @@ export default function App() {
   const admin = user.perfil === 'admin'
   const conteudo = {
     inicio: <Inicio user={user} ir={ir} />,
-    aulas: <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />,
+    aulas: <Aulas sub={rota.sub} ir={ir} />,
     atividades: <Atividades user={user} sub={rota.sub} ir={ir} />,
-    provas: <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />,
+    provas: <Provas sub={rota.sub} ir={ir} />,
     calendario: <Calendario />,
     perfil: <Perfil user={user} onAtualizar={setUser} />,
     ...(admin && { usuarios: <Usuarios /> }),
