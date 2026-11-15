@@ -51,7 +51,7 @@ export default function Aulas({ sub, ir }) {
                 <ul className="lista-cartoes">
                   {doDia.map((x) => (
                     <li key={x.id}>
-                      <button className={`prova aula-linha ${x.status === 'inativa' ? 'passada' : ''}`} onClick={() => setEditando(x)}>
+                      <button className={`linha-botao aula-linha ${x.status === 'inativa' ? 'passada' : ''}`} onClick={() => setEditando(x)}>
                         <span className="hora num">{x.horario}</span>
                         <span className="corpo-item">
                           <strong>{x.nome_disciplina} <span className="mudo">{x.cod_disciplina}</span></strong>

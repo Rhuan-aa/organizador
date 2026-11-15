@@ -123,7 +123,8 @@ export function Formulario({ onSalvar, children, extra, dois, semAcoes }) {
   const enviar = async (e) => {
     e.preventDefault()
     setEnviando(true)
-    try { await onSalvar(Object.fromEntries(new FormData(e.target))) } catch (err) { setErro(err.message); setEnviando(false) }
+    try { await onSalvar(Object.fromEntries(new FormData(e.target))); setErro('') } catch (err) { setErro(err.message) }
+    setEnviando(false)
   }
   return (
     <form onSubmit={enviar}>

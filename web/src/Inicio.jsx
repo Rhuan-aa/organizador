@@ -56,7 +56,8 @@ export default function Inicio({ user, ir }) {
     <Item key={a.id} tipo="atividade" titulo={a.titulo} disciplina={a.nome_disciplina} atrasada={atrasada}
       quando={rotuloPrazo(diasAte(a.data_entrega))} onConcluir={() => concluir(a)} />
   )
-  const extenso = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const hojeExtenso = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const extenso = hojeExtenso[0].toUpperCase() + hojeExtenso.slice(1)
   const nada = !aulasHoje.length && !ativHoje.length && !provasHoje.length
 
   return (
@@ -64,7 +65,7 @@ export default function Inicio({ user, ir }) {
       <div className="cabecalho">
         <div>
           <h1>Olá, {user.nome.split(' ')[0]}</h1>
-          <p className="sub" style={{ textTransform: 'capitalize' }}>{extenso}</p>
+          <p className="sub">{extenso}</p>
         </div>
         <div className="acoes">
           <button className="btn" onClick={() => ir('atividades/nova')}><Icone nome="mais" />Atividade</button>

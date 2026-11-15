@@ -8,7 +8,7 @@ const MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out
 function Linha({ p, passada, onAbrir }) {
   return (
     <li>
-      <button className={`prova ${passada ? 'passada' : ''}`} onClick={() => onAbrir(p)}>
+      <button className={`linha-botao ${passada ? 'passada' : ''}`} onClick={() => onAbrir(p)}>
         <span className="data-bloco"><b className="num">{p.data.slice(8, 10)}</b>{MES[+p.data.slice(5, 7) - 1]}</span>
         <span className="corpo-item">
           <strong>{p.nome_disciplina}</strong>
