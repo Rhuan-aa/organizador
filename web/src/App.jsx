@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from './api.js'
 import CrudPage from './CrudPage.jsx'
+import Calendario from './Calendario.jsx'
 
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((d, i) => [i, d])
 const STATUS = [['a_fazer', 'A fazer'], ['em_andamento', 'Em andamento'], ['concluida', 'Concluída']]
@@ -148,6 +149,7 @@ export default function App() {
     ['aulas', 'Aulas', false, <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />],
     ['atividades', 'Atividades', false, <CrudPage titulo="Atividade" rota="atividades" campos={CAMPOS.atividades} classeLinha={classePrazo(user.antecedencia_dias)} />],
     ['provas', 'Provas', false, <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />],
+    ['calendario', 'Calendário', false, <Calendario />],
     ['perfil', 'Perfil', false, <Perfil user={user} onAtualizar={setUser} />],
     ['usuarios', 'Usuários', true, <Usuarios />],
   ].filter((p) => !p[2] || user.perfil === 'admin')
