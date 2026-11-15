@@ -1,5 +1,43 @@
 import { useEffect, useState } from 'react'
 import { api } from './api.js'
+import CrudPage from './CrudPage.jsx'
+
+const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((d, i) => [i, d])
+const STATUS = [['a_fazer', 'A fazer'], ['em_andamento', 'Em andamento'], ['concluida', 'Concluída']]
+
+const CAMPOS = {
+  aulas: [
+    { nome: 'cod_disciplina', rotulo: 'Código', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'nome_disciplina', rotulo: 'Disciplina', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'professor', rotulo: 'Professor', filtro: true, coluna: true },
+    { nome: 'sala', rotulo: 'Sala', coluna: true },
+    { nome: 'dia_semana', rotulo: 'Dia', tipo: 'select', opcoes: DIAS, obrigatorio: true, coluna: true },
+    { nome: 'horario', rotulo: 'Horário', tipo: 'time', obrigatorio: true, coluna: true },
+    { nome: 'periodo', rotulo: 'Período', filtro: true },
+    { nome: 'semestre', rotulo: 'Semestre', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'status', rotulo: 'Status', tipo: 'select', opcoes: [['ativa', 'Ativa'], ['inativa', 'Inativa']], filtro: true },
+  ],
+  atividades: [
+    { nome: 'aula_id', rotulo: 'Aula', tipo: 'aula', obrigatorio: true, coluna: true },
+    { nome: 'titulo', rotulo: 'Título', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'descricao', rotulo: 'Descrição', tipo: 'textarea' },
+    { nome: 'data_entrega', rotulo: 'Entrega', tipo: 'date', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'status', rotulo: 'Status', tipo: 'select', opcoes: STATUS, coluna: true, inline: true },
+  ],
+  provas: [
+    { nome: 'aula_id', rotulo: 'Aula', tipo: 'aula', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'data', rotulo: 'Data', tipo: 'date', obrigatorio: true, filtro: true, coluna: true },
+    { nome: 'horario', rotulo: 'Horário', tipo: 'time', obrigatorio: true, coluna: true },
+    { nome: 'conteudo', rotulo: 'Conteúdo', tipo: 'textarea', coluna: true },
+  ],
+}
+
+// RF04: vermelho = vencida; amarelo = prazo dentro da antecedência do usuário
+const classePrazo = (antecedencia) => (a) => {
+  if (a.status === 'concluida') return ''
+  const dias = (new Date(a.data_entrega) - new Date(new Date().toLocaleDateString('sv'))) / 864e5
+  return dias < 0 ? 'vencida' : dias <= antecedencia ? 'proxima' : ''
+}
 
 const formDados = (e) => Object.fromEntries(new FormData(e.target))
 
@@ -98,7 +136,7 @@ function Usuarios() {
 export default function App() {
   const [user, setUser] = useState(null)
   const [pronto, setPronto] = useState(false)
-  const [pagina, setPagina] = useState('perfil')
+  const [pagina, setPagina] = useState('aulas')
   useEffect(() => {
     api('GET', '/auth/eu').then(setUser).catch(() => {}).finally(() => setPronto(true))
   }, [])
@@ -107,6 +145,9 @@ export default function App() {
 
   // [chave, rótulo, só admin?, conteúdo]
   const paginas = [
+    ['aulas', 'Aulas', false, <CrudPage titulo="Aula" rota="aulas" campos={CAMPOS.aulas} />],
+    ['atividades', 'Atividades', false, <CrudPage titulo="Atividade" rota="atividades" campos={CAMPOS.atividades} classeLinha={classePrazo(user.antecedencia_dias)} />],
+    ['provas', 'Provas', false, <CrudPage titulo="Prova" rota="provas" campos={CAMPOS.provas} />],
     ['perfil', 'Perfil', false, <Perfil user={user} onAtualizar={setUser} />],
     ['usuarios', 'Usuários', true, <Usuarios />],
   ].filter((p) => !p[2] || user.perfil === 'admin')
