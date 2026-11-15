@@ -16,10 +16,9 @@ export function criarApp(db) {
     const em = String(email).trim().toLowerCase()
     if (db.prepare('SELECT 1 FROM usuarios WHERE email = ? AND excluido_em IS NULL').get(em))
       return res.status(409).json({ erro: 'E-mail já cadastrado' })
-    const perfil = db.prepare('SELECT COUNT(*) n FROM usuarios').get().n === 0 ? 'admin' : 'aluno'
     const { lastInsertRowid: id } = db
-      .prepare('INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (?, ?, ?, ?)')
-      .run(String(nome).trim(), em, hashSenha(String(senha)), perfil)
+      .prepare("INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (?, ?, ?, 'aluno')")
+      .run(String(nome).trim(), em, hashSenha(String(senha)))
     const u = db.prepare('SELECT * FROM usuarios WHERE id = ?').get(id)
     setarCookie(res, u)
     res.status(201).json(publico(u))

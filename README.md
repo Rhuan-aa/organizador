@@ -16,7 +16,7 @@ npm run build        # build da interface (web/dist)
 ```
 
 Variáveis opcionais: `PORT`, `DB_FILE`, `SECRET` (assinatura do token de login; defina em produção — sem ela, uma chave aleatória é gerada a cada execução e os logins expiram quando o servidor reinicia), `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`.
-Sem `SMTP_HOST` os e-mails são apenas escritos no console. O primeiro usuário registrado vira administrador.
+Sem `SMTP_HOST` os e-mails são apenas escritos no console. O cadastro pela tela sempre cria um aluno; para tornar alguém administrador, rode no servidor: `npm run admin -- email@exemplo.com`.
 
 ## EAP (D8) -> código
 

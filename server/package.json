@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --disable-warning=ExperimentalWarning src/index.js",
+    "admin": "node --disable-warning=ExperimentalWarning src/admin.js",
     "test": "node --disable-warning=ExperimentalWarning --test \"test/*.test.js\""
   },
   "dependencies": {

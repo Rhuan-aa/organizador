@@ -5,6 +5,7 @@
   "scripts": {
     "dev:server": "npm run dev -w server",
     "dev:web": "npm run dev -w web",
+    "admin": "npm run admin -w server --",
     "test": "npm test -w server",
     "build": "npm run build -w web"
   }

@@ -2,14 +2,18 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createHmac } from 'node:crypto'
 import { iniciar } from './util.js'
+import { promoverAdmin } from '../src/admin.js'
 
 test('registro, login, eu, perfis e senha errada', async (t) => {
-  const { cliente, fechar } = await iniciar()
+  const { db, cliente, fechar } = await iniciar()
   t.after(fechar)
   const a = cliente()
   let r = await a('POST', '/api/auth/registrar', { nome: 'Ana', email: 'ana@x.com', senha: '123' })
   assert.equal(r.status, 201)
-  assert.equal(r.json.perfil, 'admin') // primeiro usuário
+  assert.equal(r.json.perfil, 'aluno') // cadastro sempre cria aluno
+  assert.equal((await a('GET', '/api/usuarios')).status, 403)
+  assert.equal(promoverAdmin(db, ' ANA@x.com '), true)
+  assert.equal((await a('GET', '/api/usuarios')).status, 200)
   assert.equal(r.json.senha_hash, undefined)
   r = await a('GET', '/api/auth/eu')
   assert.equal(r.json.email, 'ana@x.com')
@@ -32,12 +36,19 @@ test('registro, login, eu, perfis e senha errada', async (t) => {
 })
 
 test('token forjado com a antiga chave padrão é rejeitado', async (t) => {
-  const { base, cliente, fechar } = await iniciar()
+  const { db, base, cliente, fechar } = await iniciar()
   t.after(fechar)
   // cria o usuário 1 (admin) para o token forjado apontar para alguém real
   await cliente()('POST', '/api/auth/registrar', { nome: 'Ana', email: 'ana@x.com', senha: '123' })
+  promoverAdmin(db, 'ana@x.com')
   const payload = Buffer.from(JSON.stringify({ id: 1, perfil: 'admin' })).toString('base64url')
   const hmac = createHmac('sha256', 'dev-secret-troque-em-producao').update(payload).digest('base64url')
   const r = await fetch(`${base}/api/usuarios`, { headers: { cookie: `token=${payload}.${hmac}` } })
   assert.equal(r.status, 401)
+})
+
+test('promoverAdmin com e-mail inexistente retorna false', async (t) => {
+  const { db, fechar } = await iniciar()
+  t.after(fechar)
+  assert.equal(promoverAdmin(db, 'nao@x.com'), false)
 })
